@@ -33,8 +33,11 @@ export function splitWords(target, { delay = 0, scrollTrigger } = {}) {
     mask: "words",
     autoSplit: true,
     onSplit(self) {
+      // Estende a máscara para baixo sem mudar o layout, para não cortar descendentes (ç, g, p)
+      gsap.set(self.masks, { paddingBottom: "0.15em", marginBottom: "-0.15em" });
+
       return gsap.from(self.words, {
-        yPercent: 110,
+        yPercent: 125,
         duration: 0.9,
         stagger: 0.07,
         delay,

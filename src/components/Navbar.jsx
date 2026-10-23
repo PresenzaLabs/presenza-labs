@@ -44,10 +44,15 @@ export default function Header() {
     const mm = gsap.matchMedia();
 
     mm.add(REDUCED, () => {
-      gsap.from(header.current, { yPercent: -100, autoAlpha: 0, duration: 0.9, delay: 0.1, ease: "power3.out" });
+      // Entrada usa `y` (px) e o esconder usa `yPercent`: propriedades separadas para um não sobrescrever o outro
+      gsap.from(header.current, { y: -72, autoAlpha: 0, duration: 0.9, delay: 0.1, ease: "power3.out" });
 
       // Esconde ao rolar para baixo e volta ao rolar para cima
-      const show = gsap.to(header.current, { yPercent: -100, duration: 0.35, ease: "power2.out", paused: true }).reverse();
+      const show = gsap.fromTo(
+        header.current,
+        { yPercent: 0 },
+        { yPercent: -100, duration: 0.35, ease: "power2.out", paused: true, immediateRender: false }
+      );
 
       ScrollTrigger.create({
         start: "top -120",
