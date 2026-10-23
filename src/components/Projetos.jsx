@@ -1,30 +1,18 @@
-// Subcomponente de Título reutilizável
-function SectionHeading({ eyebrow, title, text }) {
-  return (
-    <div>
-      <p className="text-sm font-bold uppercase tracking-wide text-primary">
-        {eyebrow}
-      </p>
-      <h2 className="mt-3 text-3xl font-extrabold leading-tight text-foreground sm:text-4xl lg:text-5xl">
-        {title}
-      </h2>
-      {text && (
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          {text}
-        </p>
-      )}
-    </div>
-  );
-}
+import { useRef } from "react";
+import SectionHeading from "./SectionHeading";
+import { gsap, useGSAP, reveal, REDUCED } from "../lib/gsap";
 
+// `count` marca os valores que sobem de 0 até o número ao entrar na tela
 const stats = [
   {
-    value: "+8",
+    prefix: "+",
+    count: 8,
     label: "projetos concluídos",
     text: "Experiências digitais entregues para empresas que buscavam crescer.",
   },
   {
-    value: "100%",
+    count: 100,
+    suffix: "%",
     label: "de satisfação",
     text: "Compromisso total com qualidade, transparência e resultado.",
   },
@@ -36,34 +24,69 @@ const stats = [
 ];
 
 export default function Projects() {
+  const container = useRef(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(REDUCED, () => {
+        reveal(".section-head");
+        reveal(".stat-card", { trigger: ".stats-grid", y: 50, stagger: 0.15, start: "top 80%" });
+
+        gsap.utils.toArray(".stat-count").forEach((el) => {
+          gsap.from(el, {
+            textContent: 0,
+            duration: 1.6,
+            ease: "power2.out",
+            snap: { textContent: 1 },
+            scrollTrigger: { trigger: ".stats-grid", start: "top 80%", once: true },
+          });
+        });
+
+        gsap.fromTo(
+          ".stat-bar",
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            duration: 1,
+            delay: 0.4,
+            stagger: 0.15,
+            ease: "power3.inOut",
+            scrollTrigger: { trigger: ".stats-grid", start: "top 80%", once: true },
+          }
+        );
+      });
+    },
+    { scope: container }
+  );
+
   return (
-    <section id="projetos" className="scroll-mt-20 py-24 lg:py-32">
+    <section id="projetos" ref={container} className="scroll-mt-20 border-t border-border bg-surface py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <SectionHeading
           eyebrow="Resultados em números"
-          title="Projetos tratados como ciência exata."
+          title={<>Projetos tratados como <span className="accent text-primary-strong">ciência exata</span>.</>}
           text="Prazos claros, acompanhamento próximo e uma entrega construída para durar."
         />
 
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {stats.map((stat, index) => (
-            <article
-              key={stat.label}
-              className="relative overflow-hidden rounded-lg border border-border bg-card p-7 shadow-lab sm:p-9"
-            >
-              <span className="absolute right-5 top-4 text-xs font-extrabold text-primary">
-                0{index + 1}
-              </span>
-              <p className="text-5xl font-extrabold text-foreground sm:text-6xl">
-                {stat.value}
+        <div className="stats-grid mt-14 grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
+          {stats.map((stat) => (
+            <article key={stat.label} className="stat-card reveal bg-background p-8 sm:p-10">
+              <p className="text-6xl font-semibold tracking-tight text-foreground tabular-nums sm:text-7xl">
+                {stat.count != null ? (
+                  <>
+                    {stat.prefix}
+                    <span className="stat-count">{stat.count}</span>
+                    {stat.suffix}
+                  </>
+                ) : (
+                  stat.value
+                )}
               </p>
-              <h3 className="mt-3 text-lg font-extrabold text-foreground">
-                {stat.label}
-              </h3>
-              <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                {stat.text}
-              </p>
-              <div className="mt-7 h-1 w-12 rounded-full bg-primary" />
+              <div className="stat-bar mt-6 h-px w-full origin-left bg-primary" />
+              <h3 className="mt-6 text-base font-semibold text-foreground">{stat.label}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{stat.text}</p>
             </article>
           ))}
         </div>

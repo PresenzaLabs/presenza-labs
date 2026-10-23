@@ -1,23 +1,7 @@
-import { ChevronDown } from "lucide-react";
-
-// Subcomponente de Título reutilizável
-function SectionHeading({ eyebrow, title, text }) {
-  return (
-    <div>
-      <p className="text-sm font-bold uppercase tracking-wide text-primary">
-        {eyebrow}
-      </p>
-      <h2 className="mt-3 text-3xl font-extrabold leading-tight text-foreground sm:text-4xl lg:text-5xl">
-        {title}
-      </h2>
-      {text && (
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          {text}
-        </p>
-      )}
-    </div>
-  );
-}
+import { useRef } from "react";
+import { Plus } from "lucide-react";
+import SectionHeading from "./SectionHeading";
+import { gsap, useGSAP, reveal, REDUCED } from "../lib/gsap";
 
 const faqs = [
   {
@@ -43,28 +27,38 @@ const faqs = [
 ];
 
 export default function Faq() {
+  const container = useRef(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(REDUCED, () => {
+        reveal(".section-head");
+        reveal(".faq-item", { trigger: ".faq-list", y: 20, stagger: 0.08, start: "top 85%" });
+      });
+    },
+    { scope: container }
+  );
+
   return (
-    <section id="faq" className="scroll-mt-20 py-24 lg:py-32">
-      <div className="mx-auto max-w-5xl px-5 lg:px-8">
+    <section id="faq" ref={container} className="scroll-mt-20 py-24 lg:py-32">
+      <div className="mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
         <SectionHeading
+          className="self-start lg:sticky lg:top-32"
           eyebrow="Dúvidas frequentes"
-          title="Tudo explicado sem complicação."
+          title={<>Tudo explicado sem <span className="accent text-primary-strong">complicação</span>.</>}
           text="Respostas diretas para você tomar uma decisão com segurança."
         />
 
-        <div className="mt-12 border-t border-border">
-          {faqs.map((faq, index) => (
-            <details key={faq.question} className="group border-b border-border">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left text-base font-extrabold text-foreground sm:text-lg [&::-webkit-details-marker]:hidden">
-                <span className="flex items-start gap-4">
-                  <span className="mt-0.5 text-xs text-primary">
-                    0{index + 1}
-                  </span>
-                  {faq.question}
-                </span>
-                <ChevronDown className="size-5 shrink-0 text-primary transition-transform duration-200 group-open:rotate-180" />
+        <div className="faq-list border-t border-border">
+          {faqs.map((faq) => (
+            <details key={faq.question} className="faq-item reveal group border-b border-border">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left text-base font-medium text-foreground transition-colors hover:text-primary-strong sm:text-lg [&::-webkit-details-marker]:hidden">
+                {faq.question}
+                <Plus className="size-5 shrink-0 text-primary-strong transition-transform duration-300 group-open:rotate-45" />
               </summary>
-              <p className="max-w-3xl pb-7 pl-10 text-sm leading-7 text-muted-foreground sm:text-base">
+              <p className="max-w-2xl pb-7 text-sm leading-7 text-muted-foreground sm:text-base">
                 {faq.answer}
               </p>
             </details>

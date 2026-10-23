@@ -19,7 +19,7 @@ function Logo() {
         height="24"
         className="size-15"
       />
-      <p className="text-2xl font-extrabold text-foreground">
+      <p className="text-2xl font-semibold tracking-tight text-foreground">
         Presenza Labs
       </p>
     </a>
@@ -50,7 +50,7 @@ export default function Footer() {
               
               {/* Coluna 1 */}
               <div className="flex flex-col gap-3">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-primary">
+                <span className="text-xs font-medium text-foreground">
                   Navegação
                 </span>
                 <a href="#sobre" className="text-muted-foreground transition-colors hover:text-foreground">
@@ -69,7 +69,7 @@ export default function Footer() {
 
               {/* Coluna 2 */}
               <div className="flex flex-col gap-3">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-primary">
+                <span className="text-xs font-medium text-foreground">
                   Soluções
                 </span>
                 <span className="text-muted-foreground">Landing Pages</span>
@@ -80,7 +80,7 @@ export default function Footer() {
 
               {/* Coluna 3 */}
               <div className="flex flex-col gap-3">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-primary">
+                <span className="text-xs font-medium text-foreground">
                   Conectar
                 </span>
                 <a

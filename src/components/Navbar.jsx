@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, MessageCircle, X } from "lucide-react";
 import { Button } from "../ui/Button";
 import LogoPng from "../assets/logo-presenzalabs.webp"
+import { gsap, useGSAP, ScrollTrigger, REDUCED } from "../lib/gsap";
 
 const WHATSAPP_MESSAGE = "Olá! Vi o site da Presenza Labs e quero solicitar um orçamento.";
 const WHATSAPP_URL = `https://wa.me/5511966105279?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
@@ -17,7 +18,7 @@ const navItems = [
 
 function Logo() {
   return (
-    <a href="#top" className="flex items-center gap-2 text-lg font-extrabold text-foreground">
+    <a href="#top" className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
       <img
         src={LogoPng}
         alt="Presenza Labs"
@@ -37,6 +38,25 @@ function Logo() {
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const header = useRef(null);
+
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add(REDUCED, () => {
+      gsap.from(header.current, { yPercent: -100, autoAlpha: 0, duration: 0.9, delay: 0.1, ease: "power3.out" });
+
+      // Esconde ao rolar para baixo e volta ao rolar para cima
+      const show = gsap.to(header.current, { yPercent: -100, duration: 0.35, ease: "power2.out", paused: true }).reverse();
+
+      ScrollTrigger.create({
+        start: "top -120",
+        end: "max",
+        onUpdate: (self) => (self.direction === 1 ? show.play() : show.reverse()),
+        onLeaveBack: () => show.reverse(),
+      });
+    });
+  });
 
   // Fecha o menu ao pressionar a tecla ESC
   useEffect(() => {
@@ -62,7 +82,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-foreground/8 bg-background/85 backdrop-blur-xl">
+      <header ref={header} className="fixed inset-x-0 top-0 z-40 border-b border-foreground/8 bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 lg:px-8">
           <Logo />
 
@@ -72,7 +92,7 @@ export default function Header() {
               <a
                 key={href}
                 href={href}
-                className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                className="relative text-sm font-medium text-muted-foreground transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 hover:text-foreground hover:after:origin-left hover:after:scale-x-100"
               >
                 {label}
               </a>
@@ -135,7 +155,7 @@ export default function Header() {
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="border-b border-border py-5 text-xl font-bold text-foreground"
+              className="border-b border-border py-5 text-xl font-semibold text-foreground"
             >
               {label}
             </a>

@@ -1,42 +1,48 @@
-import { Sparkles } from "lucide-react";
+import { useRef } from "react";
+import SectionHeading from "./SectionHeading";
+import { gsap, useGSAP, reveal, REDUCED } from "../lib/gsap";
 
 export default function Testimonials() {
-  return (
-    <section id="avaliacoes" className="scroll-mt-20 bg-surface-strong py-24 text-primary-foreground lg:py-28">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-        <div>
-          <p className="mb-3 flex items-center gap-2 text-xs font-extrabold uppercase text-primary">
-            <span className="h-px w-7 bg-primary" />
-            Avaliações
-          </p>
-          <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
-            Resultados reais merecem histórias reais.
-          </h2>
-          <p className="mt-5 max-w-lg text-base leading-7 text-primary-foreground/65">
-            Em breve, este espaço receberá os depoimentos dos nossos clientes. Sem textos inventados, apenas experiências verdadeiras.
-          </p>
-        </div>
+  const container = useRef(null);
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[0, 1].map((item) => (
-            <div
-              key={item}
-              className="min-h-56 rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-7"
-            >
-              <div className="flex gap-1">
-                {[0, 1, 2, 3, 4].map((star) => (
-                  <Sparkles key={star} className="size-4 text-primary/45" />
-                ))}
-              </div>
-              <div className="mt-8 h-3 w-full rounded-full bg-primary-foreground/8" />
-              <div className="mt-3 h-3 w-4/5 rounded-full bg-primary-foreground/8" />
-              <div className="mt-3 h-3 w-2/3 rounded-full bg-primary-foreground/8" />
-              <p className="mt-8 text-xs font-bold uppercase text-primary/70">
-                Depoimento em breve
-              </p>
-            </div>
-          ))}
-        </div>
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(REDUCED, () => {
+        reveal(".section-head");
+        reveal(".quote-block", { y: 40, delay: 0.15 });
+        gsap.from(".quote-mark", {
+          yPercent: 30,
+          autoAlpha: 0,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".quote-block", start: "top 85%", once: true },
+        });
+      });
+    },
+    { scope: container }
+  );
+
+  return (
+    <section id="avaliacoes" ref={container} className="scroll-mt-20 bg-surface-strong py-24 text-on-dark lg:py-32">
+      <div className="mx-auto grid max-w-7xl items-end gap-14 px-5 lg:grid-cols-[1fr_1fr] lg:px-8">
+        <SectionHeading
+          dark
+          eyebrow="Avaliações"
+          title={<>Resultados reais merecem histórias <span className="accent text-primary">reais</span>.</>}
+          text="Este espaço vai receber os depoimentos dos nossos clientes. Sem textos inventados, apenas experiências verdadeiras."
+        />
+
+        <figure className="quote-block reveal relative border-l border-on-dark/20 pl-8 lg:pl-12">
+          <span aria-hidden className="quote-mark block font-serif text-[7rem] leading-[0.6] text-primary">
+            “
+          </span>
+          <blockquote className="mt-6 font-serif text-2xl italic leading-snug text-on-dark/85 sm:text-3xl">
+            O próximo depoimento pode ser sobre o seu projeto.
+          </blockquote>
+          <figcaption className="mt-6 text-sm text-on-dark/50">Depoimentos em breve</figcaption>
+        </figure>
       </div>
     </section>
   );

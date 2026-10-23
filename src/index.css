@@ -3,7 +3,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-sans: 'Elms Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -19,6 +20,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-strong: var(--primary-strong);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -60,6 +62,8 @@
   --popover-foreground: oklch(0.2 0.051 264.2);
   --primary: oklch(0.716 0.175 70.5);
   --primary-foreground: oklch(0.2 0.051 264.2);
+  /* versão escura do âmbar para texto pequeno sobre fundo claro (contraste) */
+  --primary-strong: oklch(0.55 0.14 60);
   --secondary: oklch(0.94 0.042 105);
   --secondary-foreground: oklch(0.2 0.051 264.2);
   --muted: oklch(0.955 0.025 105);
@@ -138,25 +142,79 @@
     text-rendering: optimizeLegibility;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
   ::selection {
     background: color-mix(in oklab, var(--primary) 40%, transparent);
   }
 }
 
-@keyframes bubble-rise {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-14px) scale(1.04); }
+/* Rótulo acima dos títulos: discreto, sem caixa nem ícone */
+@utility eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+
+  &::before {
+    content: "";
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1px;
+    background: currentColor;
+  }
 }
 
-@utility animate-bubble {
-  animation: bubble-rise 5s ease-in-out infinite;
+/* Destaque em serifa itálica dentro dos títulos */
+.accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Estado inicial dos elementos animados pelo GSAP (evita o "pisca" antes do JS) */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-eyebrow,
+  .hero-title,
+  .hero-text,
+  .hero-cta,
+  .hero-proof,
+  .hero-visual,
+  .hero-badge,
+  .section-head,
+  .split-title,
+  .reveal {
+    visibility: hidden;
+  }
+  .proc-line {
+    transform: scaleY(0);
+  }
+}
+
+.proc-dot.is-active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Abertura suave do FAQ (navegadores sem suporte simplesmente abrem direto) */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 0.4s cubic-bezier(0.22, 1, 0.36, 1), content-visibility 0.4s allow-discrete;
+}
+
+details[open]::details-content {
+  block-size: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .animate-bubble { animation: none; }
+  details::details-content {
+    transition: none;
+  }
 }
